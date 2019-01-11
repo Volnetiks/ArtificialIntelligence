@@ -1,32 +1,32 @@
 package com.volnetiks.ai.questions;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 /* Date: 11/01/2019 For Artificial Intelligence By Volnetiks */
 public class QuestionsManager {
 
-    List<String> questions = new ArrayList<>();
+    List<String> questions;
 
-    public QuestionsManager(ArrayList<String> questions) {
+    public QuestionsManager(List<String> questions) {
         this.questions = questions;
     }
 
-    public boolean fetchQuestions(String question, String questionA) {
-        String[] tab1 = question.split(" ");
-        String[] tab2 = questionA.split(" ");
-        int finded = 0;
-        if(tab1.length - tab2.length >= 4) return false;
-        for(int i = 0; i < tab1.length; i++) {
-            if(!tab2[i].equalsIgnoreCase(tab1[i])){
-                finded++;
+    public HashMap fetchQuestionsAndFindOne(String question, List<String> q) {
+        HashMap<String, Integer> array = new HashMap<>();
+        int finded;
+        for(String value : q) {
+            String[] tab1 = question.split(" ");
+            String[] tab2 = value.split(" ");
+            finded = 0;
+            int smallArray = tab1.length > tab2.length ? tab2.length : tab1.length;
+            for(int i = 0; i < smallArray; i++) {
+                if (!tab2[i].equalsIgnoreCase(tab1[i])) {
+                    finded++;
+                }
             }
+            array.put(value, finded);
         }
-        if(finded >= 2) {
-            return false;
-        } else {
-            return true;
-        }
+        return array;
     }
 
     public List<String> getQuestions() {
