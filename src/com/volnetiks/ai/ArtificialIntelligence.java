@@ -4,7 +4,6 @@ package com.volnetiks.ai;
 public class ArtificialIntelligence {
 
     public static void main(String[] args) {
-
     }
 
 }
