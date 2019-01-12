@@ -1,7 +1,7 @@
 package com.volnetiks.ai;
 
 import com.volnetiks.ai.action.DefinitionAction;
-import com.volnetiks.ai.action.TestAction;
+import com.volnetiks.ai.action.TranslateAction;
 import com.volnetiks.ai.questions.QuestionsManager;
 import com.volnetiks.ai.questions.ValueComparator;
 
@@ -29,10 +29,9 @@ public class ArtificialIntelligence {
 
     private static void initArray() {
         questions.add("Give me a definition");
-        questions.add("How are you?");
-        questions.add("What is your name?");
+        questions.add("Can you translate a text?");
         actions.put("Give me a definition", DefinitionAction.class);
-        actions.put("How are you?", TestAction.class);
+        actions.put("Can you translate a text?", TranslateAction.class);
     }
 
     public static TreeMap<String, Integer> sortMapByValue(HashMap<String, Integer> map){
