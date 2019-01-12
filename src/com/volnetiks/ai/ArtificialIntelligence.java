@@ -1,5 +1,7 @@
 package com.volnetiks.ai;
 
+import com.volnetiks.ai.action.DefinitionAction;
+import com.volnetiks.ai.action.TestAction;
 import com.volnetiks.ai.questions.QuestionsManager;
 import com.volnetiks.ai.questions.ValueComparator;
 
@@ -8,20 +10,29 @@ import java.util.*;
 /* Date: 11/01/2019 For Artificial Intelligence By Volnetiks */
 public class ArtificialIntelligence {
 
+    static List<String> questions;
+    static HashMap<String, Class<?>> actions;
+
     public static void main(String[] args) {
-        List<String> questions = new ArrayList<>();
-        questions.add("Give me a definition");
-        questions.add("How are you?");
-        questions.add("What is your name?");
+        questions = new ArrayList<>();
+        actions = new HashMap<>();
+        initArray();
         System.out.println("Please, ask me something.");
         Scanner sc = new Scanner(System.in);
         String question = sc.nextLine();
-        QuestionsManager questionsManager = new QuestionsManager(questions);
-        int i = 0;
+        QuestionsManager questionsManager = new QuestionsManager(questions, actions);
         HashMap array;
         array = questionsManager.fetchQuestionsAndFindOne(question, questionsManager.getQuestions());
         TreeMap sortedMap = sortMapByValue(array);
-        System.out.println(sortedMap.firstKey());
+        questionsManager.getActionToDo(sortedMap.firstKey().toString());
+    }
+
+    private static void initArray() {
+        questions.add("Give me a definition");
+        questions.add("How are you?");
+        questions.add("What is your name?");
+        actions.put("Give me a definition", DefinitionAction.class);
+        actions.put("How are you?", TestAction.class);
     }
 
     public static TreeMap<String, Integer> sortMapByValue(HashMap<String, Integer> map){

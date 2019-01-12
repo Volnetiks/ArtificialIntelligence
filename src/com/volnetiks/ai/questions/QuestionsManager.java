@@ -1,14 +1,17 @@
 package com.volnetiks.ai.questions;
 
+import java.lang.reflect.Constructor;
 import java.util.*;
 
 /* Date: 11/01/2019 For Artificial Intelligence By Volnetiks */
 public class QuestionsManager {
 
     List<String> questions;
+    HashMap<String, Class<?>> actions;
 
-    public QuestionsManager(List<String> questions) {
+    public QuestionsManager(List<String> questions, HashMap<String, Class<?>> actions) {
         this.questions = questions;
+        this.actions = actions;
     }
 
     public HashMap fetchQuestionsAndFindOne(String question, List<String> q) {
@@ -32,4 +35,19 @@ public class QuestionsManager {
     public List<String> getQuestions() {
         return questions;
     }
+
+    public void getActionToDo(String question) {
+        for(int t = 0; t < actions.size(); t++) {
+            Class c = actions.get(question);
+            try {
+                Class classe = Class.forName(c.getName());
+                Constructor constructor = classe.getConstructor(new Class[]{});
+                constructor.newInstance();
+                break;
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
 }
