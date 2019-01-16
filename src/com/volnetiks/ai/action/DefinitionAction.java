@@ -1,26 +1,31 @@
 package com.volnetiks.ai.action;
 
+import com.volnetiks.ai.graphics.InterfaceRender;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import secrets.SecretValue;
 
 import javax.net.ssl.HttpsURLConnection;
+import javax.swing.*;
+import java.awt.event.KeyEvent;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.URL;
-import java.util.Scanner;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 /* Date: 11/01/2019 For Artificial Intelligence By Volnetiks */
 public class DefinitionAction {
 
     public DefinitionAction() {
-        System.out.println("Give me a word");
-        Scanner sc = new Scanner(System.in);
-        String word = sc.next().toLowerCase();
-        String url = "https://od-api.oxforddictionaries.com:443/api/v1/entries/en/" + word;
-        String json = callApi(url);
-        String definition = parseJSONDefinition(json);
-        System.out.println("Definition: " + definition);
+
+    }
+
+    public DefinitionAction(InterfaceRender interfaceRender) {
+       interfaceRender.setAction(true);
+       interfaceRender.setQuestionAction("Give me a definition");
+       interfaceRender.getMessages().add("Give me a word");
+       interfaceRender.getBooleans().put("Give me a word", false);
     }
 
     private String parseJSONDefinition(String json) {
@@ -54,9 +59,25 @@ public class DefinitionAction {
                 stringBuilder.append(line + "\n");
             }
 
-            return stringBuilder.toString();
+            String defintion = parseJSONDefinition(stringBuilder.toString());
+
+            return defintion;
         } catch (Exception e) {
             return "Word cant be found.";
         }
     }
+    public void calledKey(KeyEvent e, InterfaceRender interfaceRender, String message) {
+        if(e.getKeyCode() == KeyEvent.VK_ENTER) {
+            if(interfaceRender.isAction()) {
+                String[] words = message.split(" ");
+                String word = words[0];
+                String url = "https://od-api.oxforddictionaries.com:443/api/v1/entries/en/" + word.toLowerCase();
+                String def = "Definition: " + callApi(url);
+                interfaceRender.getMessages().add(def);
+                interfaceRender.getBooleans().put(def, false);
+                interfaceRender.setAction(false);
+            }
+        }
+    }
 }
+//

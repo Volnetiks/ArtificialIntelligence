@@ -1,5 +1,7 @@
 package com.volnetiks.ai.questions;
 
+import com.volnetiks.ai.graphics.InterfaceRender;
+
 import java.lang.reflect.Constructor;
 import java.util.*;
 
@@ -14,10 +16,10 @@ public class QuestionsManager {
         this.actions = actions;
     }
 
-    public HashMap fetchQuestionsAndFindOne(String question, List<String> q) {
+    public HashMap fetchQuestionsAndFindOne(String question) {
         HashMap<String, Integer> array = new HashMap<>();
         int finded;
-        for(String value : q) {
+        for(String value : questions) {
             String[] tab1 = question.split(" ");
             String[] tab2 = value.split(" ");
             finded = 0;
@@ -36,18 +38,17 @@ public class QuestionsManager {
         return questions;
     }
 
-    public void getActionToDo(String question) {
-        for(int t = 0; t < actions.size(); t++) {
-            Class c = actions.get(question);
-            try {
-                Class classe = Class.forName(c.getName());
-                Constructor constructor = classe.getConstructor(new Class[]{});
-                constructor.newInstance();
-                break;
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+    public void getActionToDo(String question, InterfaceRender interfaceRender) {
+        Class c = actions.get(question);
+        try {
+            Class classe = Class.forName(c.getName());
+            Constructor constructor = classe.getConstructor(new Class[]{ InterfaceRender.class });
+            constructor.newInstance(interfaceRender);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
+
+
 
 }
