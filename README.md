@@ -5,3 +5,4 @@ She can / will:
 - Answer some question
 - communicate with the user
 - Generate some piece of text
+- Translate texe
