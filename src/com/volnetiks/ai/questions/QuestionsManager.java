@@ -8,33 +8,67 @@ import java.util.*;
 /* Date: 11/01/2019 For Artificial Intelligence By Volnetiks */
 public class QuestionsManager {
 
-    List<String> questions;
+    HashMap<String, String> questions;
     HashMap<String, Class<?>> actions;
+    HashMap<String, String> messages;
 
-    public QuestionsManager(List<String> questions, HashMap<String, Class<?>> actions) {
+    public QuestionsManager(HashMap<String, String> questions, HashMap<String, Class<?>> actions, HashMap<String, String> messages) {
         this.questions = questions;
         this.actions = actions;
+        this.messages = messages;
     }
 
     public HashMap fetchQuestionsAndFindOne(String question) {
         HashMap<String, Integer> array = new HashMap<>();
-        int finded;
-        for(String value : questions) {
-            String[] tab1 = question.split(" ");
-            String[] tab2 = value.split(" ");
+        questions.forEach((x, value) -> {
+            int finded;
+            char[] valueC = value.toLowerCase().toCharArray();
+            String[] questionW = question.toLowerCase().split(" ");
+            String[] charW = value.toLowerCase().split(" ");
+            int smallS = questionW.length > charW.length ? charW.length : questionW.length;
+
             finded = 0;
-            int smallArray = tab1.length > tab2.length ? tab2.length : tab1.length;
-            for(int i = 0; i < smallArray; i++) {
-                if (!tab2[i].equalsIgnoreCase(tab1[i])) {
-                    finded++;
+            for (int i = 0; i < smallS; i++) {
+                char[] wordC = questionW[i].toCharArray();
+                char[] charC = charW[i].toCharArray();
+                int smallArray = wordC.length > charC.length ? charC.length : wordC.length;
+                for(int j = 0; j < smallArray; j++) {
+                    if(charC[j] != wordC[j]) {
+                        finded++;
+                    }
                 }
             }
-            array.put(value, finded);
-        }
+            int pourcent = Math.round(valueC.length * 80 / 100);
+            if(finded <= (valueC.length - pourcent)) {
+                array.put(value, finded);
+            }
+        });
+//        for(String value : questions) {
+//            char[] valueC = value.toLowerCase().toCharArray();
+//            String[] questionW = question.toLowerCase().split(" ");
+//            String[] charW = value.toLowerCase().split(" ");
+//            int smallS = questionW.length > charW.length ? charW.length : questionW.length;
+//
+//            finded = 0;
+//            for (int i = 0; i < smallS; i++) {
+//                char[] wordC = questionW[i].toCharArray();
+//                char[] charC = charW[i].toCharArray();
+//                int smallArray = wordC.length > charC.length ? charC.length : wordC.length;
+//                for(int j = 0; j < smallArray; j++) {
+//                    if(charC[j] != wordC[j]) {
+//                        finded++;
+//                    }
+//                }
+//            }
+//            int pourcent = Math.round(valueC.length * 80 / 100);
+//            if(finded <= (valueC.length - pourcent)) {
+//                array.put(value, finded);
+//            }
+//        }
         return array;
     }
 
-    public List<String> getQuestions() {
+    public HashMap<String, String> getQuestions() {
         return questions;
     }
 
@@ -49,6 +83,7 @@ public class QuestionsManager {
         }
     }
 
-
-
+    public HashMap<String, String> getMessages() {
+        return messages;
+    }
 }

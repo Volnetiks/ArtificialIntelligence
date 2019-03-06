@@ -1,8 +1,9 @@
 package com.volnetiks.ai.action;
 
-import com.gtranslate.Language;
 import com.volnetiks.ai.graphics.InterfaceRender;
 import com.volnetiks.ai.utils.Translator;
+import com.volnetiks.ai.utils.Utils;
+import javafx.scene.transform.Translate;
 
 import java.awt.event.KeyEvent;
 import java.io.IOException;
@@ -25,8 +26,8 @@ public class TranslateAction {
         interfaceRender.getMessageField().setText("");
         try {
             String traduction = "Traduction: " + Translator.translate("fr", message);
-            interfaceRender.getMessages().add(traduction);
-            interfaceRender.getBooleans().put(traduction, false);
+            String[] split = traduction.split("(?<=\\G....................)");
+            Utils.addMessage(interfaceRender, false, split);
             interfaceRender.setAction(false);
         } catch (IOException e1) {
             e1.printStackTrace();

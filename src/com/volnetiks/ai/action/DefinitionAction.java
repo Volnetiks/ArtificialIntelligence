@@ -1,6 +1,7 @@
 package com.volnetiks.ai.action;
 
 import com.volnetiks.ai.graphics.InterfaceRender;
+import com.volnetiks.ai.utils.Utils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import secrets.SecretValue;
@@ -11,8 +12,6 @@ import java.awt.event.KeyEvent;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.HashMap;
 
 /* Date: 11/01/2019 For Artificial Intelligence By Volnetiks */
 public class DefinitionAction {
@@ -23,9 +22,8 @@ public class DefinitionAction {
 
     public DefinitionAction(InterfaceRender interfaceRender) {
        interfaceRender.setAction(true);
-       interfaceRender.setQuestionAction("Give me a definition");
-       interfaceRender.getMessages().add("Give me a word");
-       interfaceRender.getBooleans().put("Give me a word", false);
+       interfaceRender.setQuestionAction(interfaceRender.getQuestionsManager().getMessages().get("Give me a definition"));
+       Utils.addMessage(interfaceRender, false, interfaceRender.getQuestionsManager().getMessages().get("Give me a word"));
     }
 
     private String parseJSONDefinition(String json) {
@@ -73,8 +71,8 @@ public class DefinitionAction {
                 String word = words[0];
                 String url = "https://od-api.oxforddictionaries.com:443/api/v1/entries/en/" + word.toLowerCase();
                 String def = "Definition: " + callApi(url);
-                interfaceRender.getMessages().add(def);
-                interfaceRender.getBooleans().put(def, false);
+                String[] split = def.split("(?<=\\G....................)");
+                Utils.addMessage(interfaceRender, false, split);
                 interfaceRender.setAction(false);
             }
         }

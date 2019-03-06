@@ -1,9 +1,13 @@
 package com.volnetiks.ai.graphics;
 
 import com.volnetiks.ai.action.DefinitionAction;
+import com.volnetiks.ai.action.GameAction;
 import com.volnetiks.ai.action.TranslateAction;
 import com.volnetiks.ai.questions.QuestionsManager;
 import com.volnetiks.ai.questions.ValueComparator;
+import com.volnetiks.ai.sql.SQLConnection;
+import com.volnetiks.ai.utils.Utils;
+import secrets.SecretValue;
 
 import javax.swing.*;
 import java.awt.*;
@@ -22,18 +26,25 @@ public class InterfaceRender extends JPanel implements KeyListener {
     private HashMap<String, Boolean> booleans = new HashMap<>();
     private ArrayList<String> messages = new ArrayList<>();
     private ArrayList<JLabel> labels = new ArrayList<>();
-    private List<String> questions;
+    private HashMap<String, String> questions;
     private HashMap<String, Class<?>> actions;
     private QuestionsManager questionsManager;
     private boolean action;
     private String questionAction;
+    private SecretValue secretValue;
+    private String language;
+    private HashMap<String, String> messagesAi;
 
     public InterfaceRender() {
+        setLanguage("En");
         initArray();
         this.setLayout(null);
         action = false;
 
-        questionsManager = new QuestionsManager(questions, actions);
+        secretValue = new SecretValue();
+        SQLConnection sqlConnection = new SQLConnection("jdbc:mysql://", secretValue.getSqlHost(), secretValue.getSqlDatabase(), secretValue.getSqlUser(), secretValue.getSqlPass());
+        sqlConnection.connection();
+        sqlConnection.accesPermissionIp();
 
         messageField.setBounds(100, 525, 775, 25);
         messageField.setForeground(Color.BLACK);
@@ -60,13 +71,18 @@ public class InterfaceRender extends JPanel implements KeyListener {
                 if(!hasOnlySpace(messageField.getText())) {
                     String message = messageField.getText();
                     messageField.setText("");
-                    booleans.put(message, true);
-                    messages.add(message);
+                    String[] split = message.split("(?<=\\G....................)");
+                    Utils.addMessage(this, true, split);
+
                     if(!action) {
                         HashMap array;
                         array = questionsManager.fetchQuestionsAndFindOne(message);
-                        TreeMap sortedMap = sortMapByValue(array);
-                        questionsManager.getActionToDo(sortedMap.firstKey().toString(), this);
+                        if(array.isEmpty()) {
+                            Utils.addMessage(this, false, "Sorry, but i dont understand");
+                            return;
+                        }
+                        TreeMap<String, Integer> sortedMap = sortMapByValue(array);
+                        questionsManager.getActionToDo(sortedMap.firstKey(), this);
                     } else {
                         Class c = actions.get(getQuestionAction());
                         try {
@@ -108,6 +124,11 @@ public class InterfaceRender extends JPanel implements KeyListener {
         }
     }
 
+    private void designDialogBox(Graphics graphics) {
+        Image image = Toolkit.getDefaultToolkit().getImage("dialog.png");
+        graphics.drawImage(image, 100, 100, this);
+    }
+
     private boolean hasOnlySpace(String text) {
         char[] textC = text.toCharArray();
         for(char c : textC) {
@@ -126,20 +147,37 @@ public class InterfaceRender extends JPanel implements KeyListener {
         super.paintComponent(g);
         FontMetrics fontMetrics = g.getFontMetrics(new Font(messageField.getFont().getName(), Font.PLAIN, 25));
         renderMessages(messages, booleans, labels, fontMetrics);
+        designDialogBox(g);
     }
 
-    private void initArray() {
-        questions = new ArrayList<>();
+    public void initArray() {
+        questions = new HashMap<>();
         actions = new HashMap<>();
-        questions.add("Give me a definition");
-        questions.add("Can you translate a text?");
-        actions.put("Give me a definition", DefinitionAction.class);
-        actions.put("Can you translate a text?", TranslateAction.class);
+        try {
+            Class classe = Class.forName("com.volnetiks.ai.language." + getLanguage() + "Language");
+            Constructor constructor = classe.getConstructor(new Class[]{});
+            Object classes = constructor.newInstance();
+            Method getQuestions = classes.getClass().getDeclaredMethod("getQuestions");
+            questions = (HashMap<String, String>) getQuestions.invoke(classes);
+            Method getActions = classes.getClass().getDeclaredMethod("getActions");
+            actions = (HashMap<String, Class<?>>) getActions.invoke(classes);
+            Method getMessages = classes.getClass().getDeclaredMethod("getMessage");
+            messagesAi = (HashMap<String, String>) getMessages.invoke(classes);
+            questionsManager = new QuestionsManager(questions, actions, messagesAi);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+//        questions.add("Give me a definition");
+//        questions.add("Can you translate a text?");
+//        actions.put("Give me a definition", DefinitionAction.class);
+//        actions.put("Can you translate a text?", TranslateAction.class);
+//        questions.add("Can we play a game?");
+//        actions.put("Can we play a game?", GameAction.class);
     }
 
     public static TreeMap<String, Integer> sortMapByValue(HashMap<String, Integer> map){
         Comparator<String> comparator = new ValueComparator(map);
-        TreeMap<String, Integer> result = new TreeMap<                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   >(comparator);
+        TreeMap<String, Integer> result = new TreeMap<>(comparator);
         result.putAll(map);
         return result;
     }
@@ -153,6 +191,9 @@ public class InterfaceRender extends JPanel implements KeyListener {
     }
 
     public void initJlabel(ArrayList<String> messages, ArrayList<JLabel> labels) {
+        while(messages.size() > 10) {
+            messages.remove(0);
+        }
         for(int i = 0; i < (messages.size() - labels.size()); i++) {
             JLabel label = new JLabel();
             labels.add(label);
@@ -178,5 +219,17 @@ public class InterfaceRender extends JPanel implements KeyListener {
 
     public void setQuestionAction(String questionAction) {
         this.questionAction = questionAction;
+    }
+
+    public String getLanguage() {
+        return language;
+    }
+
+    public void setLanguage(String language) {
+        this.language = language;
+    }
+
+    public QuestionsManager getQuestionsManager() {
+        return questionsManager;
     }
 }

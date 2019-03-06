@@ -18,7 +18,6 @@ public final class Translator {
 
     private static final String GOOGLE_TRANSLATE_URL = "http://translate.google.com/translate_a/single";
 
-
     private Translator() {
     }
 
